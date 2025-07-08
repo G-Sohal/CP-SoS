@@ -52,3 +52,39 @@ int compare(int i, int j, int l, int k) {
     pair<int, int> b = {c[k][j], c[k][(j+l-(1 << k))%n]};
     return a == b ? 0 : a < b ? -1 : 1;
 }
+
+// for lcp same method as above
+// take k = floor(log2(n)) and check for first length 2^k from beginning then from end
+// int lcp(int i, int j) {
+//     int ans = 0;
+//     for (int k = log_n; k >= 0; k--) {
+//         if (c[k][i % n] == c[k][j % n]) {
+//             ans += 1 << k;
+//             i += 1 << k;
+//             j += 1 << k;
+//         }
+//     }
+//     return ans;
+// }
+vector<int> lcp_construction(string const& s, vector<int> const& p) {
+    int n = s.size();
+    vector<int> rank(n, 0);
+    for (int i = 0; i < n; i++)
+        rank[p[i]] = i;
+
+    int k = 0;
+    vector<int> lcp(n-1, 0);
+    for (int i = 0; i < n; i++) {
+        if (rank[i] == n - 1) {
+            k = 0;
+            continue;
+        }
+        int j = p[rank[i] + 1];
+        while (i + k < n && j + k < n && s[i+k] == s[j+k])
+            k++;
+        lcp[rank[i]] = k;
+        if (k)
+            k--;
+    }
+    return lcp;
+}
