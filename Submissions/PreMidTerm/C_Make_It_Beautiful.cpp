@@ -4,16 +4,34 @@
 #define ll long long
 using namespace std;
 
-ll bt(ll a, vector<ll> &op, ll m) {
+ll num_ones(ll a) {
     ll cnt=0;
-    ll i=0;
-    while(a>=0 && i<=m) {
-        i++;
+    while(a) {
         if(a%2==1) cnt++;
-        else op.push_back(1<<(i-1));
         a/=2;
     }
     return cnt;
+}
+
+ll num_bits(ll a) {
+    ll cnt=0;
+    while(a) {
+        cnt++;
+        a/=2;
+    }
+    return cnt;
+}
+
+void where_zero(ll a, ll m, vector<ll> &v) { 
+    // v PB values which if added make beauty+=1; sort v; till last bit of k
+    ll cnt=0;
+    while(cnt<m) {
+        if(a%2==0) {
+            v.push_back(1LL <<(cnt));
+        }
+        a/=2;
+        cnt++;
+    }
 }
 
 int main() {
@@ -22,36 +40,24 @@ int main() {
 
     ll t; cin>>t;
     while(t--) {
-        ll n, k;
-        cin>>n>>k;
+        ll n, k; cin>>n>>k;
         vector<ll> a(n);
-        ll beauty=0;
-        vector<ll> op;
-        for(ll i=0; i<n; i++) {cin>>a[i]; }
-        ll m = 29;
-        for(ll i=0; i<n; i++) beauty+=bt(a[i], op, m);
-        sort(op.begin(), op.end());
-        ll i=0;
-        // for(auto z: op) cout<<z<<" ";
-        // cout<<endl;
-        for(auto z: op) {
-            i+=z;
-            if(i>k) break;
-            beauty++;
+        ll beauty = 0;
+        ll m = num_bits(k);
+        vector<ll> v;
+        for(ll i=0; i<n; i++) {
+            cin>>a[i];
+            beauty+=num_ones(a[i]);
+            where_zero(a[i], m, v);
         }
-        if(i<k) {
-            ll q = 1<<(m+1);
-            ll tmp = q;
-            q+=i;
-            while(q<=k) {
-                // cout<<q<<" ";
-                beauty++;
-                // cout<<beauty<<endl;
-                tmp*=2;
-                
-                q+=tmp;
-            }
+        sort(v.begin(), v.end());
+        for(auto z : v) {
+            // cout<<z<<" : ";
+            k-=z;
+            if(k>=0) beauty++;
+            else break;
         }
         cout<<beauty<<endl;
+
     }
 }

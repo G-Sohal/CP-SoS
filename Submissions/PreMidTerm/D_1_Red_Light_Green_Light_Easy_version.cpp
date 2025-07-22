@@ -1,69 +1,40 @@
 #include <iostream>
-#include <unordered_map>
 #include <vector>
-#include <tuple>
 #include <set>
-using namespace std;
 #define ll long long
+using namespace std;
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-
-    int t;
-    cin >> t;
-
-    while (t--) {
-        int n, k;
-        cin >> n >> k;
-
+    ll END = 1e15;
+    ll t; cin>>t;
+    while(t--) {
+        ll n, k;
+        cin>>n>>k;
         vector<ll> p(n);
-        vector<int> d(n);
-        unordered_map<ll, int> light_map;
-
-        for (int i = 0; i < n; ++i) cin>>p[i];
-
-        for (int i = 0; i < n; ++i) {
-            cin >> d[i];
-            light_map[p[i]] = d[i];
-        }
-
-        int q;
-        cin >> q;
-        vector<ll> a(q);
-        for (int i = 0; i < q; ++i) cin>>a[i];
-
-        ll min_pos = p[0];
-        ll max_pos = p[n - 1];
-
-        for (int i = 0; i < q; ++i) {
-            ll pos = a[i];
-            int time = 0;
-            int dir = 1;
-
-            set<tuple<ll, int, int>> visited;
-            bool escaped = false;
-
-            while (true) {
-                tuple<ll, int, int> state = make_tuple(pos, dir, time%k);
-
-                if (visited.count(state)) {
-                    cout<<"NO"<<endl;
-                    break;
-                }
-                visited.insert(state);
-                if (light_map.count(pos) && (time%k == light_map[pos])) {
-                    dir *= -1;
-                }
-
-                pos+=dir;
+        
+        set<ll> s;
+        for(ll i=0; i<n; i++) {cin>>p[i]; s.insert(p[i]);}
+        vector<ll> d(p[n-1]+1, k+1);
+        for(ll i=0; i<n; i++) cin>>d[p[i]];
+        ll q; cin>>q;
+        while(q--) {
+            ll a; cin>>a;
+            a--; 
+            ll a_copy = a;
+            ll dir = 1;
+            ll time = 0;
+            // ll index = a;
+            while(a>=0 && a<=END) {
+                if(s.count(a)  && (time%k == d[a])) dir*=(-1);
+                a += dir;
                 time++;
-
-                if (pos < min_pos || pos > max_pos) {
-                    cout<<"YES"<<endl;
-                    break;
-                }
+                time%=k;
+                if(time == 0 && a == a_copy) break;
             }
+            if(a<0 || a>=n) cout<<"YES"<<endl;
+            else cout<<"NO"<<endl;
         }
     }
 }
